@@ -26,7 +26,7 @@ from openai import OpenAI
 import re
 from dotenv import load_dotenv
 import urllib.parse
-import urllib.request
+from curl_cffi import requests
 import subprocess
 
 load_dotenv()
@@ -84,7 +84,11 @@ def api_music_url():
     if not video_id:
         return jsonify({"error": "No video_id provided"}), 400
     try:
-        cmd = ["yt-dlp", "-J", "-f", "bestaudio", f"https://www.youtube.com/watch?v={video_id}"]
+        cmd = ["yt-dlp", "-J", "-f", "bestaudio"]
+        if os.path.exists("cookies.txt"):
+            cmd.extend(["--cookies", "cookies.txt"])
+        cmd.append(f"https://www.youtube.com/watch?v={video_id}")
+        
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
         info = json.loads(result.stdout)
         return jsonify({
@@ -212,7 +216,7 @@ def api_voice():
             set_dialogue('none')
             try:
                 query = urllib.parse.quote_plus(stripped + ' energetic')
-                html = urllib.request.urlopen(f'https://www.youtube.com/results?search_query={query}').read().decode()
+                html = requests.get(f'https://www.youtube.com/results?search_query={query}', impersonate="chrome110").text
                 video_ids = re.findall(r'watch\?v=(\S{11})', html)
                 if video_ids:
                     return jsonify({"speak": f"Playing {stripped} to keep you alert.", "action": "play_native", "video_ids": video_ids[:20], "title": stripped})
@@ -270,7 +274,7 @@ def api_voice():
         if song:
             try:
                 query = urllib.parse.quote_plus(song)
-                html = urllib.request.urlopen(f'https://www.youtube.com/results?search_query={query}').read().decode()
+                html = requests.get(f'https://www.youtube.com/results?search_query={query}', impersonate="chrome110").text
                 video_ids = re.findall(r'watch\?v=(\S{11})', html)
                 if video_ids:
                     return jsonify({"speak": f"Playing {song}.", "action": "play_native", "video_ids": video_ids[:20], "title": song})
