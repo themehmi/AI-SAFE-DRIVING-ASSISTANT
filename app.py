@@ -122,17 +122,20 @@ def api_frame():
     avg_ear = 1.0
     alert_triggered = None
     
+    left_eye_points = []
+    right_eye_points = []
+    
     if face_landmarks_list:
         landmarks = face_landmarks_list[0]
         left_eye_raw = landmarks.get('left_eye', [])
         right_eye_raw = landmarks.get('right_eye', [])
         
         if len(left_eye_raw) == 6 and len(right_eye_raw) == 6:
-            left_eye = [(int(x/scale), int(y/scale)) for x, y in left_eye_raw]
-            right_eye = [(int(x/scale), int(y/scale)) for x, y in right_eye_raw]
+            left_eye_points = [(int(x/scale), int(y/scale)) for x, y in left_eye_raw]
+            right_eye_points = [(int(x/scale), int(y/scale)) for x, y in right_eye_raw]
             
-            left_ear = eye_aspect_ratio(left_eye)
-            right_ear = eye_aspect_ratio(right_eye)
+            left_ear = eye_aspect_ratio(left_eye_points)
+            right_ear = eye_aspect_ratio(right_eye_points)
             avg_ear = (left_ear + right_ear) / 2.0
             
             system_status["ear"] = avg_ear
@@ -184,7 +187,9 @@ def api_frame():
         "state": system_status["state"],
         "drowsy_counter": system_status["drowsy_counter"],
         "alert": alert_triggered,
-        "action": action
+        "action": action,
+        "left_eye": left_eye_points,
+        "right_eye": right_eye_points
     })
 
 @app.route('/api/voice', methods=['POST'])
@@ -215,9 +220,11 @@ def api_voice():
         if len(stripped) > 1:
             set_dialogue('none')
             try:
-                query = urllib.parse.quote_plus(stripped + ' energetic')
-                html = requests.get(f'https://www.youtube.com/results?search_query={query}', impersonate="chrome110").text
-                video_ids = re.findall(r'watch\?v=(\S{11})', html)
+                cmd = ["yt-dlp", f"ytsearch10:{stripped} energetic", "--get-id", "--flat-playlist"]
+                if os.path.exists("cookies.txt"):
+                    cmd.extend(["--cookies", "cookies.txt"])
+                result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+                video_ids = [line.strip() for line in result.stdout.split('\n') if len(line.strip()) == 11]
                 if video_ids:
                     return jsonify({"speak": f"Playing {stripped} to keep you alert.", "action": "play_native", "video_ids": video_ids[:20], "title": stripped})
                 else:
@@ -267,15 +274,20 @@ def api_voice():
     elif 'mute' in cmd:
         return jsonify({"speak": "Muting.", "action": "mute_native"})
 
-    if command.lower().startswith('play '):
-        song = command[5:].strip()
+    if 'play ' in command.lower():
+        idx = command.lower().find('play ') + 5
+        song = command[idx:].strip()
         if song.lower() in ['music', 'song', 'the music', 'the song', 'it']:
             return jsonify({"speak": "Resuming.", "action": "resume_native"})
+        if song.lower() in ['another', 'another one', 'another song', 'something else', 'a different song', 'different song', 'this song', 'this']:
+            return jsonify({"speak": "Skipping.", "action": "next_native"})
         if song:
             try:
-                query = urllib.parse.quote_plus(song)
-                html = requests.get(f'https://www.youtube.com/results?search_query={query}', impersonate="chrome110").text
-                video_ids = re.findall(r'watch\?v=(\S{11})', html)
+                cmd = ["yt-dlp", f"ytsearch10:{song}", "--get-id", "--flat-playlist"]
+                if os.path.exists("cookies.txt"):
+                    cmd.extend(["--cookies", "cookies.txt"])
+                result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+                video_ids = [line.strip() for line in result.stdout.split('\n') if len(line.strip()) == 11]
                 if video_ids:
                     return jsonify({"speak": f"Playing {song}.", "action": "play_native", "video_ids": video_ids[:20], "title": song})
                 else:

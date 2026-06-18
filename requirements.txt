@@ -9,3 +9,4 @@ gunicorn==22.0.0
 setuptools
 curl-cffi
 yt-dlp
+httpx<0.28.0

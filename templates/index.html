@@ -610,9 +610,7 @@
                     <div class="mmp-artist" id="mmp-artist">Unknown Artist</div>
                 </div>
                 <div class="mmp-controls">
-                    <button class="mmp-btn" id="mmp-prev" onclick="if(ytPlayer && typeof ytPlayer.previousVideo === 'function') ytPlayer.previousVideo()"><i class="fa-solid fa-backward-step"></i></button>
                     <button class="mmp-btn play-pause" id="mmp-play-pause" onclick="toggleMmpPlay()"><i class="fa-solid fa-pause"></i></button>
-                    <button class="mmp-btn" id="mmp-next" onclick="if(ytPlayer && typeof ytPlayer.nextVideo === 'function') ytPlayer.nextVideo()"><i class="fa-solid fa-forward-step"></i></button>
                 </div>
                 <div class="mmp-expand">
                     <i class="fa-solid fa-chevron-down"></i>
@@ -635,6 +633,7 @@
             <div class="tab-content active" id="vision-tab">
                 <div class="video-wrapper">
                     <video id="videoElement" autoplay playsinline muted></video>
+                    <canvas id="overlayCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); pointer-events: none;"></canvas>
                     <canvas id="canvasElement" style="display:none;"></canvas>
                 </div>
             </div>
@@ -735,6 +734,7 @@
 
         let currentQueue = [];
         let currentQueueIndex = 0;
+        let currentExtractionId = 0;
 
         function toggleMmpPlay() {
             if (isMmpPlaying) {
@@ -745,6 +745,9 @@
         }
 
         async function playNativeAudio(videoId, titleGuess) {
+            const extractionId = ++currentExtractionId;
+            try { nativeAudio.pause(); } catch(e) {}
+            
             document.getElementById('custom-media-player').style.display = 'flex';
             document.getElementById('mmp-thumbnail').src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
             document.getElementById('mmp-title').innerText = "Extracting Stream...";
@@ -754,6 +757,10 @@
             try {
                 const res = await fetch(`/api/music_url?video_id=${videoId}`);
                 const data = await res.json();
+                
+                // Abort if the user requested another song while this one was extracting
+                if (extractionId !== currentExtractionId) return;
+                
                 if (data.url) {
                     nativeAudio.src = data.url;
                     nativeAudio.volume = 1.0;
@@ -942,6 +949,36 @@
                         } else if (data.state === "LEVEL_2" || data.state === "LEVEL_3") {
                             statusContainer.classList.add('level-3');
                             statusIndicator.innerText = "CRITICAL";
+                        }
+
+                        // Draw eye annotations
+                        const overlay = document.getElementById('overlayCanvas');
+                        if (overlay) {
+                            const octx = overlay.getContext('2d');
+                            if (overlay.width !== video.videoWidth) {
+                                overlay.width = video.videoWidth;
+                                overlay.height = video.videoHeight;
+                            }
+                            octx.clearRect(0, 0, overlay.width, overlay.height);
+                            
+                            if (data.left_eye && data.right_eye && data.left_eye.length > 0) {
+                                octx.strokeStyle = data.ear < 0.22 ? 'red' : 'lime';
+                                octx.lineWidth = 2;
+                                
+                                const drawEye = (pts) => {
+                                    if (!pts || pts.length === 0) return;
+                                    octx.beginPath();
+                                    octx.moveTo(pts[0][0], pts[0][1]);
+                                    for (let i = 1; i < pts.length; i++) {
+                                        octx.lineTo(pts[i][0], pts[i][1]);
+                                    }
+                                    octx.closePath();
+                                    octx.stroke();
+                                };
+                                
+                                drawEye(data.left_eye);
+                                drawEye(data.right_eye);
+                            }
                         }
 
                         // Speak alert if triggered
