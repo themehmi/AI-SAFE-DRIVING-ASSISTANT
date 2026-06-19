@@ -11,6 +11,59 @@
 
 The project exists to explore how lightweight, browser-deployable computer vision (no specialized hardware) combined with an LLM-backed voice interface can reduce distracted and drowsy driving.
 
+## 🌐 Live Demo
+
+A hosted version is running on Hugging Face Spaces:
+
+**👉 [https://huggingface.co/spaces/themehmi/AI-Safe-Driving-Assistant](https://huggingface.co/spaces/themehmi/AI-Safe-Driving-Assistant)**
+
+Open it in a browser with webcam and microphone access enabled to try the drowsiness monitor and voice copilot directly — no installation required.
+
+## 🧠 How It Works
+
+The system is a single Flask app that ties together three loosely-coupled loops running in the browser: a **vision loop**, a **voice loop**, and a **status loop**. Here's how data flows between them:
+
+```
+┌─────────────────────┐        webcam frame (base64)        ┌──────────────────────┐
+│   Browser (index)    │ ───────────────────────────────────▶ │  POST /api/frame      │
+│  - captures webcam   │                                      │  - decode + cv2       │
+│  - captures mic via  │                                      │  - face_recognition   │
+│    Web Speech API    │ ◀─────────────────────────────────── │  - compute EAR        │
+└─────────────────────┘     state, EAR, alert, action          └──────────────────────┘
+        │      ▲
+        │      │ transcribed speech text                Voice command / question
+        ▼      │
+┌─────────────────────┐                                  ┌──────────────────────┐
+│  POST /api/voice     │ ───────────────────────────────▶ │ Wake-word + dialogue   │
+│                       │                                  │ state machine          │
+└─────────────────────┘ ◀─────────────────────────────────│ LLM (Llama 3.1 8B via  │
+                              spoken reply / music action   │ NVIDIA NIM) for Q&A    │
+                                                            │ ytmusicapi / yt-dlp     │
+                                                            │ for music search        │
+                                                            └──────────────────────┘
+```
+
+**1. Drowsiness monitoring (`/api/frame`)**
+The front end repeatedly grabs a webcam frame, base64-encodes it, and POSTs it to the backend. On the server, OpenCV decodes the image and `face_recognition` extracts eye landmarks. From the six landmark points per eye, the backend computes the **Eye Aspect Ratio (EAR)** — a ratio of vertical-to-horizontal eye distances that drops sharply when eyes close. The EAR is compared against a fixed threshold (`0.22`):
+
+- **Eyes stay closed ≥ 5 seconds** → state moves to `LEVEL_1`, and the app speaks a wake-up nudge.
+- **Eyes stay closed ≥ 8 seconds** → state escalates to `LEVEL_3`, the drowsy-event counter increments, and a stronger warning is issued.
+- **3+ drowsy events recorded** → the assistant proactively asks via voice whether the driver wants to pull over and rest.
+- **No response to that prompt within 15 seconds** → state escalates to `CRITICAL` and the backend signals a simulated emergency-call action to the front end.
+
+This all happens statelessly per-request on the server, with the running counters (`system_status`, dialogue state, timers) held in global memory between calls.
+
+**2. Voice copilot ("Lara") (`/api/voice`)**
+The browser's speech recognition transcribes spoken audio to text and POSTs it to `/api/voice`. The backend implements a small state machine:
+- If a **drowsiness dialogue** is active (e.g., "do you want to rest?" or "what song should I play?"), incoming speech is interpreted as the answer to that specific question.
+- Otherwise, the backend listens for the wake word **"Lara"**. Once activated, simple commands (pause, resume, skip, volume, mute) are handled directly; anything else is forwarded as a prompt to an LLM (`meta/llama-3.1-8b-instruct`, served via the NVIDIA NIM API) with a system prompt that restricts it to driving- and road-related answers only.
+
+**3. Voice-controlled music**
+Song requests (either from a direct "play [song]" command or from the drowsiness dialogue's "play a song to stay awake" branch) are resolved by searching YouTube Music via `ytmusicapi`. If that's blocked or fails (a common issue on cloud hosts), the backend falls back to a `yt-dlp` search. Returned video IDs are sent back to the browser, which plays the audio natively.
+
+**4. Status polling (`/api/status`)**
+A lightweight endpoint the front end can poll to read the current state (`NORMAL` / `LEVEL_1` / `LEVEL_3` / `CRITICAL`), EAR value, and drowsy-event counter — useful for driving any on-screen indicators (e.g., the eye-tracking overlay).
+
 ## ✨ Features
 
 - 😴 **Real-time drowsiness detection** — Computes Eye Aspect Ratio (EAR) from webcam frames using facial landmarks to detect prolonged eye closure.
