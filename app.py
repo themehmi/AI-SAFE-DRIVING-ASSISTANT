@@ -245,8 +245,8 @@ def api_music_url():
         return jsonify({"error": "No video_id provided"}), 400
     try:
         url = f"https://www.youtube.com/watch?v={video_id}"
-        # ANDROID_MUSIC client is less likely to trigger bot detection than WEB
-        yt = YouTube(url, 'ANDROID_MUSIC', use_oauth=False, allow_oauth_cache=False)
+        # Use WEB client so pytubefix automatically generates PoToken via Node.js
+        yt = YouTube(url, 'WEB', use_oauth=False, allow_oauth_cache=False)
         audio_stream = yt.streams.get_audio_only()
         
         return jsonify({
@@ -270,9 +270,14 @@ def api_music_url():
                     "artist": "yt-dlp fallback",
                     "thumbnail": f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
                 })
+        except subprocess.CalledProcessError as ex:
+            error_msg = f"pytubefix: {str(e)} | yt-dlp fallback failed: {ex.stderr}"
+            print(f"[yt-dlp fallback error] {ex.stderr}")
+            return jsonify({"error": error_msg}), 500
         except Exception as ex:
+            error_msg = f"pytubefix: {str(e)} | yt-dlp fallback failed: {str(ex)}"
             print(f"[yt-dlp fallback error] {repr(ex)}")
-        return jsonify({"error": str(e)}), 500
+            return jsonify({"error": error_msg}), 500
 
 @app.route('/api/proxy_audio')
 def api_proxy_audio():
