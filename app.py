@@ -245,68 +245,18 @@ def api_music_url():
         return jsonify({"error": "No video_id provided"}), 400
     try:
         url = f"https://www.youtube.com/watch?v={video_id}"
-        # Use WEB client so pytubefix automatically generates PoToken via Node.js
-        yt = YouTube(url, 'WEB', use_oauth=False, allow_oauth_cache=False)
+        yt = YouTube(url, use_oauth=False, allow_oauth_cache=False)
         audio_stream = yt.streams.get_audio_only()
         
         return jsonify({
-            "url": f"/api/proxy_audio?url={urllib.parse.quote(audio_stream.url)}",
+            "url": audio_stream.url,
             "title": yt.title,
             "artist": yt.author,
             "thumbnail": yt.thumbnail_url
         })
     except Exception as e:
         print(f"[pytubefix error] {repr(e)}")
-        # Fallback to yt-dlp if pytubefix fails
-        try:
-            import subprocess
-            cmd = ["yt-dlp", "--impersonate", "chrome", "--force-ipv4", "--get-url", "-f", "bestaudio", url]
-            result = subprocess.run(cmd, capture_output=True, text=True, check=True, timeout=15)
-            audio_url = result.stdout.strip()
-            if audio_url:
-                return jsonify({
-                    "url": f"/api/proxy_audio?url={urllib.parse.quote(audio_url)}",
-                    "title": "YouTube Audio",
-                    "artist": "yt-dlp fallback",
-                    "thumbnail": f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
-                })
-        except subprocess.CalledProcessError as ex:
-            error_msg = f"pytubefix: {str(e)} | yt-dlp fallback failed: {ex.stderr}"
-            print(f"[yt-dlp fallback error] {ex.stderr}")
-            return jsonify({"error": error_msg}), 500
-        except Exception as ex:
-            error_msg = f"pytubefix: {str(e)} | yt-dlp fallback failed: {str(ex)}"
-            print(f"[yt-dlp fallback error] {repr(ex)}")
-            return jsonify({"error": error_msg}), 500
-
-@app.route('/api/proxy_audio')
-def api_proxy_audio():
-    target_url = request.args.get('url')
-    if not target_url:
-        return "No URL provided", 400
-        
-    headers = {
-        'User-Agent': request.headers.get('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36')
-    }
-    if request.headers.get('Range'):
-        headers['Range'] = request.headers.get('Range')
-        
-    try:
-        # Pass User-Agent to avoid YouTube returning 403 for python-requests
-        req = requests.get(target_url, headers=headers, stream=True, timeout=10)
-        
-        resp_headers = {}
-        for k, v in req.headers.items():
-            if k.lower() in ['content-type', 'content-length', 'content-range', 'accept-ranges']:
-                resp_headers[k] = v
-                
-        return app.response_class(
-            req.iter_content(chunk_size=8192),
-            status=req.status_code,
-            headers=resp_headers
-        )
-    except Exception as e:
-        return str(e), 500
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/frame', methods=['POST'])
 def api_frame():
