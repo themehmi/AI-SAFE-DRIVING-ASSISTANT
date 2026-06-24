@@ -1216,7 +1216,7 @@
 
             // Try to find a good voice
             const voices = availableVoices.length > 0 ? availableVoices : window.speechSynthesis.getVoices();
-            const preferredVoice = voices.find(v => v.name.includes('Zira') || v.name.includes('Female')) || voices[0];
+            const preferredVoice = voices.find(v => v.name.includes('Siri') || v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('Female')) || voices[0];
             if (preferredVoice) {
                 utterance.voice = preferredVoice;
             }
