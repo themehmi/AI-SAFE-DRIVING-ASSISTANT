@@ -30,6 +30,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
 from openai import OpenAI
 import re
+from datetime import timedelta
 from dotenv import load_dotenv
 import urllib.parse
 from ytmusicapi import YTMusic
@@ -54,7 +55,8 @@ app.secret_key = os.getenv('SECRET_KEY')
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 app.config.update(
     SESSION_COOKIE_SECURE=True,
-    SESSION_COOKIE_SAMESITE='None'
+    SESSION_COOKIE_SAMESITE='None',
+    PERMANENT_SESSION_LIFETIME=timedelta(days=30)
 )
 
 # MongoDB Connection
@@ -187,6 +189,7 @@ def login():
         user = users.find_one({'username': username})
         
         if user and check_password_hash(user['password'], password):
+            session.permanent = True
             session['user_id'] = str(user['_id'])
             session['username'] = username
             return redirect(url_for('index'))

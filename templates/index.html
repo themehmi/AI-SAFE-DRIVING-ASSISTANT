@@ -17,7 +17,8 @@
             --primary: #ffffff;
             --primary-glow: rgba(255, 255, 255, 0.3);
             --secondary: #666666;
-            --success: #00e676; /* Kept semantic colors visible for safety alerts */
+            --success: #00e676;
+            /* Kept semantic colors visible for safety alerts */
             --warning: #ffb300;
             --danger: #ff1744;
             --text-main: #ffffff;
@@ -52,7 +53,8 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3); /* Much more visible scrollbar */
+            background: rgba(255, 255, 255, 0.3);
+            /* Much more visible scrollbar */
             border-radius: 4px;
         }
 
@@ -63,7 +65,10 @@
         /* Modal Styles */
         .modal-overlay {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(5px);
             z-index: 1000;
@@ -71,7 +76,7 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .modal-content {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -84,10 +89,17 @@
             text-align: center;
             animation: modalFadeIn 0.3s ease-out;
         }
-        
+
         @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .navbar {
@@ -398,8 +410,15 @@
         }
 
         @keyframes floatingTooltip {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
         }
 
         .chat-header-btn {
@@ -550,9 +569,11 @@
                 gap: 1.5rem;
                 padding: 1.5rem;
             }
-            .main-container > aside:last-child {
+
+            .main-container>aside:last-child {
                 grid-column: span 2;
             }
+
             .chat-area {
                 max-height: 400px;
             }
@@ -563,34 +584,46 @@
                 grid-template-columns: 1fr;
                 padding: 1.5rem;
             }
+
             .chat-fab {
-                display: flex; /* Show FAB on mobile */
+                display: flex;
+                /* Show FAB on mobile */
             }
+
             #copilotPanel {
                 position: fixed;
-                bottom: -120%; /* Hidden by default */
+                bottom: -120%;
+                /* Hidden by default */
                 left: 0;
                 right: 0;
                 height: 80vh;
                 margin: 0;
                 border-radius: 24px 24px 0 0;
                 z-index: 1000;
-                background: rgba(15, 15, 15, 0.95); /* Less transparent for mobile */
-                backdrop-filter: blur(24px); /* Stronger blur */
+                background: rgba(15, 15, 15, 0.95);
+                /* Less transparent for mobile */
+                backdrop-filter: blur(24px);
+                /* Stronger blur */
                 -webkit-backdrop-filter: blur(24px);
                 transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+                box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
             }
+
             #copilotPanel.open {
                 bottom: 0;
             }
+
             .chat-area {
-                min-height: 0; /* Override */
-                max-height: none; /* Let it fill the 80vh panel */
+                min-height: 0;
+                /* Override */
+                max-height: none;
+                /* Let it fill the 80vh panel */
             }
+
             .video-wrapper {
                 min-height: 300px;
             }
+
             .mobile-close-btn {
                 display: block !important;
             }
@@ -613,91 +646,93 @@
             .glass-panel {
                 padding: 1rem;
             }
+
             .video-wrapper {
                 min-height: 250px;
             }
         }
-        
+
         @media (max-width: 480px) {
             .video-wrapper {
                 min-height: 200px;
             }
-            
+
             .status-value {
                 font-size: 1.5rem;
             }
-            
+
             .navbar {
                 justify-content: center;
                 padding: 0.8rem 1rem;
             }
-            
+
             .navbar-brand {
                 font-size: 1.1rem;
             }
-            
+
             .chat-input-area {
                 flex-direction: column;
             }
-            
+
             .btn-glow {
                 padding: 0.6rem;
                 font-size: 0.85rem;
             }
-            
+
             .nav-btn {
                 padding: 6px 10px;
                 font-size: 0.8rem;
                 gap: 5px;
             }
-            
+
             .nav-btn span {
                 display: none;
             }
-            
+
             .modern-media-player {
                 padding: 8px 10px;
                 gap: 8px;
             }
-            
+
             .mmp-art {
                 width: 40px;
                 height: 40px;
             }
-            
+
             .mmp-title {
                 font-size: 0.85rem;
             }
-            
+
             .mmp-artist {
                 font-size: 0.75rem;
             }
-            
+
             .mmp-controls {
                 margin-right: 5px;
                 gap: 6px;
             }
-            
+
             .mmp-btn {
                 font-size: 1rem;
             }
-            
+
             .mmp-btn.play-pause {
                 font-size: 1.2rem;
             }
         }
-        
+
         @media (max-width: 360px) {
             .tab-nav {
                 flex-direction: column;
                 gap: 0.5rem;
             }
+
             .tab-btn {
                 text-align: center;
                 width: 100%;
             }
         }
-        
+
         /* Modern Media Player */
         .modern-media-player {
             background: #2a2a2a;
@@ -709,22 +744,25 @@
             color: white;
             position: relative;
             margin-top: 1.5rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
+
         .mmp-art {
             width: 50px;
             height: 50px;
             border-radius: 12px;
             overflow: hidden;
             flex-shrink: 0;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
+
         .mmp-art img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
+
         .mmp-info {
             flex-grow: 1;
             display: flex;
@@ -732,6 +770,7 @@
             justify-content: center;
             min-width: 0;
         }
+
         .mmp-source {
             font-size: 0.7rem;
             color: #b3b3b3;
@@ -740,6 +779,7 @@
             gap: 5px;
             margin-bottom: 2px;
         }
+
         .mmp-title {
             font-size: 0.95rem;
             font-weight: 600;
@@ -749,6 +789,7 @@
             margin-bottom: 1px;
             color: #ffffff;
         }
+
         .mmp-artist {
             font-size: 0.8rem;
             color: #b3b3b3;
@@ -756,12 +797,14 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .mmp-controls {
             display: flex;
             align-items: center;
             gap: 12px;
             margin-right: 18px;
         }
+
         .mmp-btn {
             background: none;
             border: none;
@@ -774,15 +817,19 @@
             padding: 4px;
             transition: transform 0.1s;
         }
+
         .mmp-btn:active {
             transform: scale(0.9);
         }
+
         .mmp-btn.play-pause {
             font-size: 1.4rem;
         }
+
         .mmp-btn:hover {
             color: #e0e0e0;
         }
+
         .mmp-expand {
             position: absolute;
             top: 14px;
@@ -790,7 +837,6 @@
             color: #b3b3b3;
             font-size: 0.85rem;
             cursor: pointer;
-        }
         }
     </style>
 </head>
@@ -803,23 +849,30 @@
                 <i class="fa-solid fa-eye"></i>
                 Ocull
             </div>
-            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; font-weight: 400; letter-spacing: 0.5px;">
+            <div
+                style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; font-weight: 400; letter-spacing: 0.5px;">
                 Your intelligent AI-powered safe driving companion
             </div>
-            <div style="font-size: 0.75rem; color: #666; margin-top: 4px; display: flex; gap: 10px; align-items: center;">
+            <div
+                style="font-size: 0.75rem; color: #666; margin-top: 4px; display: flex; gap: 10px; align-items: center;">
                 <span>&copy; 2026</span>
                 <span>•</span>
-                <a href="mailto:mnarinder003@gmail.com" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">
+                <a href="mailto:mnarinder003@gmail.com"
+                    style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;"
+                    onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">
                     <i class="fa-solid fa-envelope"></i> mnarinder003@gmail.com
                 </a>
                 <span>•</span>
-                <a href="https://github.com/themehmi" target="_blank" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">
+                <a href="https://github.com/themehmi" target="_blank"
+                    style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;"
+                    onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">
                     <i class="fa-brands fa-github"></i> themehmi
                 </a>
             </div>
         </div>
         <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-            <a href="/settings" class="btn-glow nav-btn" style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: #e0e0e0;">
+            <a href="/settings" class="btn-glow nav-btn"
+                style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: #e0e0e0;">
                 <i class="fa-solid fa-gear"></i> <span>Settings</span>
             </a>
             <a href="/logout" class="btn-glow nav-btn">
@@ -864,7 +917,8 @@
                     <div class="mmp-artist" id="mmp-artist">Unknown Artist</div>
                 </div>
                 <div class="mmp-controls">
-                    <button class="mmp-btn play-pause" id="mmp-play-pause" onclick="toggleMmpPlay()"><i class="fa-solid fa-pause"></i></button>
+                    <button class="mmp-btn play-pause" id="mmp-play-pause" onclick="toggleMmpPlay()"><i
+                            class="fa-solid fa-pause"></i></button>
                 </div>
                 <div class="mmp-expand">
                     <i class="fa-solid fa-chevron-down"></i>
@@ -880,7 +934,8 @@
 
             <div class="video-wrapper" style="flex-grow: 1; max-height: 80vh;">
                 <video id="videoElement" autoplay playsinline muted></video>
-                <canvas id="overlayCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); pointer-events: none;"></canvas>
+                <canvas id="overlayCanvas"
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); pointer-events: none;"></canvas>
                 <canvas id="canvasElement" style="display:none;"></canvas>
             </div>
 
@@ -902,14 +957,16 @@
                     <button id="clearChatBtn" class="chat-header-btn danger" title="Clear Chat">
                         <i class="fa-solid fa-trash"></i>
                     </button>
-                    <button id="closeChatBtn" class="chat-header-btn mobile-close-btn" style="display:none;" title="Close Chat">
+                    <button id="closeChatBtn" class="chat-header-btn mobile-close-btn" style="display:none;"
+                        title="Close Chat">
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                 </div>
             </div>
-            
+
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
-                Say hi to Lara, your virtual driving assistant. Ask her driving related questions or play music by saying "Lara".
+                Say hi to Lara, your virtual driving assistant. Ask her driving related questions or play music by
+                saying "Lara".
             </p>
 
             <div class="chat-area" id="chatHistory" style="flex-grow: 1; min-height: 250px;">
@@ -952,7 +1009,7 @@
         const copilotPanel = document.getElementById('copilotPanel');
         const closeChatBtn = document.getElementById('closeChatBtn');
 
-        if(chatFab && copilotPanel) {
+        if (chatFab && copilotPanel) {
             // Tap to open
             chatFab.addEventListener('click', () => {
                 copilotPanel.classList.add('open');
@@ -961,33 +1018,33 @@
             let startY = 0;
             chatFab.addEventListener('touchstart', (e) => {
                 startY = e.touches[0].clientY;
-            }, {passive: true});
+            }, { passive: true });
             chatFab.addEventListener('touchend', (e) => {
                 let endY = e.changedTouches[0].clientY;
-                if(startY - endY > 20) { // Swipe up
+                if (startY - endY > 20) { // Swipe up
                     copilotPanel.classList.add('open');
                 }
-            }, {passive: true});
+            }, { passive: true });
         }
-        
-        if(closeChatBtn && copilotPanel) {
+
+        if (closeChatBtn && copilotPanel) {
             // Click to close
             closeChatBtn.addEventListener('click', () => {
                 copilotPanel.classList.remove('open');
             });
-            
+
             // Swipe down on header to close
             const panelHeader = copilotPanel.querySelector('.panel-header');
             let pStartY = 0;
             panelHeader.addEventListener('touchstart', (e) => {
                 pStartY = e.touches[0].clientY;
-            }, {passive: true});
+            }, { passive: true });
             panelHeader.addEventListener('touchend', (e) => {
                 let pEndY = e.changedTouches[0].clientY;
-                if(pEndY - pStartY > 30) { // Swipe down
+                if (pEndY - pStartY > 30) { // Swipe down
                     copilotPanel.classList.remove('open');
                 }
-            }, {passive: true});
+            }, { passive: true });
         }
 
         scrollToTopBtn.addEventListener('click', () => {
@@ -1095,24 +1152,24 @@
         async function playNativeAudio(videoId, titleGuess) {
             const extractionId = ++currentExtractionId;
             nativeAudio.pause();
-            
+
             document.getElementById('custom-media-player').style.display = 'flex';
             document.getElementById('mmp-thumbnail').src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
             document.getElementById('mmp-title').innerText = "Extracting Audio Stream...";
             document.getElementById('mmp-artist').innerText = titleGuess || "YouTube Music";
             document.getElementById('mmp-play-pause').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-            
+
             try {
                 // Fetch direct audio stream URL from backend
                 const response = await fetch(`/api/music_url?video_id=${videoId}`);
                 const data = await response.json();
-                
+
                 if (extractionId !== currentExtractionId) return; // Superceded by another play
-                
+
                 if (data.url) {
                     document.getElementById('mmp-title').innerText = data.title || titleGuess;
                     document.getElementById('mmp-artist').innerText = data.artist || "YouTube Music";
-                    
+
                     nativeAudio.src = data.url;
                     nativeAudio.volume = 1.0;
                     nativeAudio.play().catch(e => {
@@ -1167,15 +1224,15 @@
             utterance.rate = 1.1;
 
             utterance.onstart = () => { isSpeaking = true; };
-            utterance.onend = () => { 
-                isSpeaking = false; 
+            utterance.onend = () => {
+                isSpeaking = false;
                 // restore music volume
                 if (isMmpPlaying) {
                     nativeAudio.volume = 1.0;
                 }
             };
-            utterance.onerror = () => { 
-                isSpeaking = false; 
+            utterance.onerror = () => {
+                isSpeaking = false;
                 if (isMmpPlaying) nativeAudio.volume = 1.0;
             };
 
@@ -1339,11 +1396,11 @@
                                 overlay.height = video.videoHeight;
                             }
                             octx.clearRect(0, 0, overlay.width, overlay.height);
-                            
+
                             if (data.left_eye && data.right_eye && data.left_eye.length > 0) {
                                 octx.strokeStyle = data.ear < 0.22 ? 'red' : 'lime';
                                 octx.lineWidth = 2;
-                                
+
                                 const drawEye = (pts) => {
                                     if (!pts || pts.length === 0) return;
                                     octx.beginPath();
@@ -1354,7 +1411,7 @@
                                     octx.closePath();
                                     octx.stroke();
                                 };
-                                
+
                                 drawEye(data.left_eye);
                                 drawEye(data.right_eye);
                             }
@@ -1405,33 +1462,33 @@
             isHardwareActive = false;
             document.getElementById('stopAppBtn').style.display = 'none';
             document.getElementById('startAppBtn').style.display = 'block';
-            
+
             // Stop Video Tracks
             const video = document.getElementById('videoElement');
             if (video.srcObject) {
                 video.srcObject.getTracks().forEach(track => track.stop());
                 video.srcObject = null;
             }
-            
+
             if (cameraInterval) {
                 clearInterval(cameraInterval);
                 cameraInterval = null;
             }
-            
+
             // Stop Audio Recognition
             if (recognition) {
                 try {
                     recognition.stop();
-                } catch(e) {}
+                } catch (e) { }
             }
-            
+
             // Clear Overlay
             const overlay = document.getElementById('overlayCanvas');
             if (overlay) {
                 const octx = overlay.getContext('2d');
                 octx.clearRect(0, 0, overlay.width, overlay.height);
             }
-            
+
             speakOutLoud("Hardware disconnected.");
         });
 

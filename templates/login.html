@@ -166,6 +166,23 @@
               {% endif %}
             {% endwith %}
         </div>
+        
+        <div id="ios-iframe-warning" style="display: none; background: rgba(255, 23, 68, 0.1); border: 1px solid var(--danger); padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9rem; text-align: left;">
+            <strong><i class="fa-solid fa-triangle-exclamation"></i> iOS Device Detected</strong><br><br>
+            Apple strictly blocks login functionality when accessed inside an embedded iframe (like Hugging Face Spaces).<br><br>
+            To log in, please <a href="#" onclick="window.open(window.location.href, '_blank'); return false;" style="color: var(--primary); text-decoration: underline; font-weight: bold;">click here to open the app directly</a>.
+        </div>
+        
+        <script>
+            // Detect if running inside an iframe
+            if (window.top !== window.self) {
+                // Detect iOS (including iPadOS)
+                var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                if (isIOS) {
+                    document.getElementById('ios-iframe-warning').style.display = 'block';
+                }
+            }
+        </script>
 
         <form action="{{ url_for('login') }}" method="POST">
             <div class="input-group">
